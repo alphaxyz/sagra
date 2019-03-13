@@ -1,6 +1,6 @@
 from tkinter import *
 from tkinter import messagebox
-
+from collections import OrderedDict 
 import math
 
 class Application(Frame):
@@ -26,16 +26,18 @@ root.grid_rowconfigure(0, weight=1)
 root.grid_columnconfigure(0, weight=1)
 
 top_frame.grid(row=0, sticky="nsew")
-ctr_frame.grid(row=1, sticky="sew")
+ctr_frame.grid(row=1, sticky="new")
 btm_frame.grid(row=2, sticky="sew")
 
 #top
-top_left = Frame(top_frame, bg='blue', width=100, height=190,borderwidth=10,padx=3, pady=3)
+top_left = Frame(top_frame, bg='blue', width=100, height=190, borderwidth=10,padx=3, pady=3)
+top_left2 = Frame(top_frame, bg='brown', width=100, height=190, borderwidth=10, padx=3, pady=3)
 top_mid = Frame(top_frame, bg='grey', width=100, height=190, padx=3, pady=3)
-top_right = Frame(top_frame, bg='black', width=100, height=190, padx=3, pady=3,borderwidth=1)
+top_right = Frame(top_frame, bg='black', width=100, height=190, padx=3, pady=3, borderwidth=1)
 
 top_left.grid(row=0, column=0, sticky="nsw")
-top_mid.grid(row=0, column=1, sticky="nsew")
+top_left2.grid(row=0, column=1, sticky="nsw")
+top_mid.grid(row=0, column=2, sticky="nsew")
 top_right.grid(row=0, column=9, sticky="ne")
 
 #center
@@ -66,7 +68,8 @@ x = 0
 y = 0
 
 numeroCorrente = 1 #numeroCorrente mostrato sul tabellone
-listaOrdini = {} #dizionario contenente gli ordni
+#listaOrdini = {} #dizionario contenente gli ordni
+listaOrdini = OrderedDict() 
 btnID = {} #dizionario contenente gli identificatori dei pulsanti nella griglia
 
 sor = "" # stringa ordinata contenente gli ordini
@@ -130,7 +133,6 @@ def insertOrderByButton():
             numeroCorrente = contatore #aggiorna il numero corrente
             var.set(numeroCorrente) # aggiorna il numero mostrato sul tabellone
             var_client.set(numeroCorrente)
-            label.pack()
             
             
             contatore +=1
@@ -156,6 +158,20 @@ def click(idx,binst):
 # create the widgets for the top frame
 s_button = Button(top_left, text = "Successivo", command = insertOrderByButton,height = 10, width = 30)
 
+def undoOrder():
+    global listaOrdini
+    global btnID
+    tempList = listaOrdini.copy()
+    if len(listaOrdini)>0:
+        removedOrder = tempList.popitem()
+        
+        removed_key = removedOrder[0]
+        click(btnID[removed_key][0],btnID[removed_key][1])
+    else:
+        messagebox.showinfo( "Errore!", "Impossibile annullare, la coda degli ordini è vuota", icon='error')
+
+undo_button = Button(top_left2, text = "Annulla", command = undoOrder,height = 10, width = 30)
+
 entry = Entry(top_right, background="pink",font=("Courier", 28))
 
 #elimina se gia presente
@@ -179,30 +195,30 @@ def insertOrderByEntry():
     testo = entry.get()
     if testo == '': #TODO:deve essere un numero
         messagebox.showinfo( "Attenzione!", "Inserire un numero", icon='warning')
-    num = int(testo)
-    if testo in listaOrdini:
-        deletemsg(num)
     else:
-        numeroCorrente = num
-        label.pack()
-        var.set(numeroCorrente)
-        var_client.set(numeroCorrente)
-        addButton(num)
+        num = int(testo)
+        if testo in listaOrdini:
+            deletemsg(num)
+        else:
+            numeroCorrente = num
+            var.set(numeroCorrente)
+            var_client.set(numeroCorrente)
+            addButton(num)
 
-        listaOrdini[str(num)] = num
+            listaOrdini[str(num)] = num
 
-        rv_listaOrdini = removekey(listaOrdini, str(num))
+            rv_listaOrdini = removekey(listaOrdini, str(num))
 
-        sor = ' - '.join(str(k) for k in sorted(rv_listaOrdini.values()))
+            sor = ' - '.join(str(k) for k in sorted(rv_listaOrdini.values()))
 
-        if(len(rv_listaOrdini) > 0):
-            sor += ' - '
-        if(len(rv_listaOrdini) == 1):
-            sor = sor[:-2]
+            if(len(rv_listaOrdini) > 0):
+                sor += ' - '
+            if(len(rv_listaOrdini) == 1):
+                sor = sor[:-2]
 
-        s = sor
-        var.set(numeroCorrente)
-        print(' '.join(rv_listaOrdini.keys()))
+            s = sor
+            var.set(numeroCorrente)
+            print(' '.join(rv_listaOrdini.keys()))
 
     entry.delete(0, 'end')
 
@@ -215,7 +231,8 @@ entry.bind('<Return>', get)
 m_button = Button(top_right, text = "Inserisci", command=insertOrderByEntry, height = 6, width = 20)
 
 # layout the widgets in the top frame
-s_button.grid(row=0, column=1, columnspan=3,sticky="ew")
+s_button.grid(row=0, column=0, columnspan=3,sticky="ew")
+undo_button.grid(row=0, column=1, columnspan=3,sticky="ew")
 entry.grid(row=1, column=0, sticky="w", padx=20,)
 m_button.grid(row=1, column=1, sticky="w", padx=20)
 
@@ -243,20 +260,21 @@ top_frame2.grid(row=0, sticky="ns")
 cnt_frame2.grid(row=1, sticky="sew")
 btm_frame2.grid(row=2, sticky="sew")
 
-varr1 = StringVar()
-varr1.set("Stiamo servendo il numero")
-labell1 = Label( top_frame2, textvariable=varr1)
-#labell1.config(width=200)
-labell1.config(font=("Courier", 50))
-labell1.grid(row=1, column=0,sticky="nsew")
+headerMessageSV = StringVar()
+headerMessageSV.set("Stiamo servendo il numero")
+headerMessage = Label( top_frame2, textvariable=headerMessageSV)
+headerMessage.config(font=("Courier", 40))
+headerMessage.grid(row=1, column=0,sticky="nsew")
 
 
 ###PROBLEMA-------------------------------------------------------------
 var = StringVar()
 label = Label( cnt_frame2, textvariable = var, relief = RAISED )
 label.config(width=200)
-label.config(font=("Courier", 200))
+label.config(font=("Courier bold", 200))
 label.grid(row=1, column=0,sticky="nsew")
+label.pack()
+
 ###PROBLEMA--------------------------------------------------------
 
 varr = StringVar()
