@@ -131,7 +131,7 @@ def insertOrderByButton():
             print(sorted(rv_listaOrdini.values()))
 
             numeroCorrente = contatore #aggiorna il numero corrente
-            var.set(numeroCorrente) # aggiorna il numero mostrato sul tabellone
+            currentNumberSV.set(numeroCorrente) # aggiorna il numero mostrato sul tabellone
             var_client.set(numeroCorrente)
             
             
@@ -201,7 +201,7 @@ def insertOrderByEntry():
             deletemsg(num)
         else:
             numeroCorrente = num
-            var.set(numeroCorrente)
+            currentNumberSV.set(numeroCorrente)
             var_client.set(numeroCorrente)
             addButton(num)
 
@@ -217,7 +217,7 @@ def insertOrderByEntry():
                 sor = sor[:-2]
 
             s = sor
-            var.set(numeroCorrente)
+            currentNumberSV.set(numeroCorrente)
             print(' '.join(rv_listaOrdini.keys()))
 
     entry.delete(0, 'end')
@@ -248,17 +248,20 @@ app2 = Application_2(second_win)
 second_win.title('Tabellone')
 
 # create all of the main containers
-top_frame2 = Frame(second_win, width=450, height=20, pady=3)
-cnt_frame2 = Frame(second_win, bg='black', width=450, height=45, pady=3)
+top_frame2 = Frame(second_win, bg='yellow', width=450, height=80, pady=3)
+top_padding2 = Frame(second_win, bg='yellow', width=450, height=80, pady=3)
+cnt_frame2 = Frame(second_win, bg='black', width=450, height=45, pady=50)
 btm_frame2 = Frame(second_win, bg='red', width=450, height=45, pady=3)
+footer_frame2 = Frame(second_win, bg='pink', width=450, height=45, pady=3)
 
 # layout all of the main containers
 second_win.grid_rowconfigure(1, weight=1)
 second_win.grid_columnconfigure(0, weight=1)
 
 top_frame2.grid(row=0, sticky="ns")
-cnt_frame2.grid(row=1, sticky="sew")
+cnt_frame2.grid(row=1, sticky="new")
 btm_frame2.grid(row=2, sticky="sew")
+footer_frame2.grid(row=3, sticky="sew")
 
 headerMessageSV = StringVar()
 headerMessageSV.set("Stiamo servendo il numero")
@@ -268,20 +271,22 @@ headerMessage.grid(row=1, column=0,sticky="nsew")
 
 
 ###PROBLEMA-------------------------------------------------------------
-var = StringVar()
-label = Label( cnt_frame2, textvariable = var, relief = RAISED )
-label.config(width=200)
-label.config(font=("Courier bold", 200))
-label.grid(row=1, column=0,sticky="nsew")
-label.pack()
+currentNumberSV = StringVar()
+currentNumberLabel = Label( cnt_frame2, textvariable = currentNumberSV, relief = RAISED )
+currentNumberLabel.config(width=200)
+currentNumberLabel.config(font=("Courier bold", 200))
+currentNumberLabel.grid(row=1, column=0,sticky="nsew")
+currentNumberLabel.pack()
 
 ###PROBLEMA--------------------------------------------------------
 
-varr = StringVar()
-varr.set(s)
-labell = Label( btm_frame2, textvariable=varr, relief=RAISED )
-labell.config(width=200)
-labell.config(font=("Courier", 100))
+bottomSV = StringVar()
+bottomSV.set(s)
+bottomLabel = Label( btm_frame2, textvariable=bottomSV, relief=RAISED )
+bottomLabel.config(width=200)
+bottomLabel.config(font=("Courier", 100))
+bottomLabel.grid(row=0, column=0,sticky="nsew")
+bottomLabel.pack()
 
 #permette di far scorrere la lista degli ordini sul tabellone
 def task():
@@ -289,8 +294,8 @@ def task():
     if len(s)>6:
         s = s[1:] + s[0]
     print(s)
-    varr.set(s)
-    labell.pack()
+    bottomSV.set(s)
+    
     second_win.after(1000, task)  # reschedule event in 2 seconds
 
 second_win.after(2000, task)
