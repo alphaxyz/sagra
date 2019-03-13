@@ -65,6 +65,15 @@ s = sor # stringa mostrata sul tabellone
 
 limite = 999 #limite contatore
 
+#aggiungi pulsante
+#id: button id
+def addButton(id):
+    btn = Button(btm_frame,text=id, height = 5, width = 5, activebackground='#3E4149')
+    btn['command'] = lambda idx=id, binst=btn: click(idx, binst)
+    btn.grid(column=(id-1)%10, row=int(math.floor((id-1)/10)), sticky="nwe")
+
+    btnID[str(id)] = (id,btn) #aggiungi l'id del pulsante inserito nella lista
+
 # funzione che inserisce un'ordine alla pressione del pulsantes
 def insertOrderByButton():
     global x
@@ -92,13 +101,10 @@ def insertOrderByButton():
 
         if not(str(contatore) in listaOrdini): #else
 
-            # crea un nuovo pulsante da inserire nella griglia
-            btn = Button(btm_frame,text=contatore, height = 5, width = 5, activebackground='#3E4149')
-            btn['command'] = lambda idx=contatore, binst=btn: click(idx, binst)
-            btn.grid(column=(contatore-1)%10, row=int(math.floor((contatore-1)/10)), sticky="nwe")
+            addButton(contatore) # crea un nuovo pulsante da inserire nella griglia
 
             listaOrdini[str(contatore)] = contatore #aggiungi l'ordine alla lista ordini
-            btnID[str(contatore)] = (contatore,btn) #aggiungi l'id del pulsante inserito nella lista
+            
 
             rv_listaOrdini = removekey(listaOrdini, str(contatore)) # dizionario senza l'ultimo ordine inserito (??)
 
@@ -160,8 +166,8 @@ def insertOrderByEntry():
     global sor
     global btnID
     testo = entry.get()
-    if testo == '':
-        messagebox.showinfo( "Attenzione!", "Inserire un numero")
+    if testo == '': #TODO:deve essere un numero
+        messagebox.showinfo( "Attenzione!", "Inserire un numero", icon='warning')
     num = int(testo)
     if testo in listaOrdini:
         deletemsg(num)
@@ -169,13 +175,11 @@ def insertOrderByEntry():
         numeroCorrente = num
         label.pack()
         var.set(numeroCorrente)
-        btn = Button(btm_frame,text=num, height = 5, width = 5, activebackground='#3E4149')
-    
-        btn['command'] = lambda idx=num, binst=btn: click(idx, binst)
-        btn.grid(column=(num-1)%10, row=int(math.floor((num-1)/10)), sticky="nwe")
+        
+        addButton(num)
 
         listaOrdini[str(num)] = num
-        btnID[str(num)] = (num,btn)
+
         rv_listaOrdini = removekey(listaOrdini, str(num))
 
         sor = ' - '.join(str(k) for k in sorted(rv_listaOrdini.values()))
