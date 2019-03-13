@@ -18,6 +18,7 @@ root.title('Client')
 
 # create all of the main containers
 top_frame = Frame(root, bg='gray', width=800, height=50, pady=3,borderwidth=1)
+ctr_frame = Frame(root, bg='orange', width=800, height=50, pady=3,borderwidth=1)
 btm_frame = Frame(root, bg='red', width=450, height=45, pady=3)
 
 # layout all of the main containers
@@ -25,17 +26,25 @@ root.grid_rowconfigure(0, weight=1)
 root.grid_columnconfigure(0, weight=1)
 
 top_frame.grid(row=0, sticky="nsew")
-btm_frame.grid(row=1, sticky="sew")
+ctr_frame.grid(row=1, sticky="sew")
+btm_frame.grid(row=2, sticky="sew")
 
 #top
-ctr_left = Frame(top_frame, bg='blue', width=100, height=190,borderwidth=10,padx=3, pady=3)
-ctr_mid = Frame(top_frame, bg='grey', width=100, height=190, padx=3, pady=3)
-ctr_right = Frame(top_frame, bg='black', width=100, height=190, padx=3, pady=3,borderwidth=1)
+top_left = Frame(top_frame, bg='blue', width=100, height=190,borderwidth=10,padx=3, pady=3)
+top_mid = Frame(top_frame, bg='grey', width=100, height=190, padx=3, pady=3)
+top_right = Frame(top_frame, bg='black', width=100, height=190, padx=3, pady=3,borderwidth=1)
 
-ctr_left.grid(row=0, column=0, sticky="nsw")
-ctr_mid.grid(row=0, column=1, sticky="nsew")
-ctr_right.grid(row=0, column=9, sticky="ne")
+top_left.grid(row=0, column=0, sticky="nsw")
+top_mid.grid(row=0, column=1, sticky="nsew")
+top_right.grid(row=0, column=9, sticky="ne")
 
+#center
+var_client = StringVar()
+var_client.set("")
+label_client = Label( ctr_frame, textvariable=var_client)
+label_client.config(width=200)
+label_client.config(font=("Courier", 50))
+label_client.pack()
 
 for x in range(10):
     Grid.columnconfigure(btm_frame, x, weight=1)
@@ -120,7 +129,9 @@ def insertOrderByButton():
 
             numeroCorrente = contatore #aggiorna il numero corrente
             var.set(numeroCorrente) # aggiorna il numero mostrato sul tabellone
+            var_client.set(numeroCorrente)
             label.pack()
+            
             
             contatore +=1
             #resetta il contatore se supera il limite
@@ -143,9 +154,9 @@ def click(idx,binst):
 
 
 # create the widgets for the top frame
-s_button = Button(ctr_left, text = "Successivo", command = insertOrderByButton,height = 10, width = 30)
+s_button = Button(top_left, text = "Successivo", command = insertOrderByButton,height = 10, width = 30)
 
-entry = Entry(ctr_right, background="pink",font=("Courier", 28))
+entry = Entry(top_right, background="pink",font=("Courier", 28))
 
 #elimina se gia presente
 def deletemsg(numero):
@@ -175,7 +186,7 @@ def insertOrderByEntry():
         numeroCorrente = num
         label.pack()
         var.set(numeroCorrente)
-        
+        var_client.set(numeroCorrente)
         addButton(num)
 
         listaOrdini[str(num)] = num
@@ -201,7 +212,7 @@ def get(event):
 
 entry.bind('<Return>', get)
 
-m_button = Button(ctr_right, text = "Inserisci", command=insertOrderByEntry, height = 6, width = 20)
+m_button = Button(top_right, text = "Inserisci", command=insertOrderByEntry, height = 6, width = 20)
 
 # layout the widgets in the top frame
 s_button.grid(row=0, column=1, columnspan=3,sticky="ew")
