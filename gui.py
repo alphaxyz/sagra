@@ -249,7 +249,6 @@ second_win.title('Tabellone')
 
 # create all of the main containers
 top_frame2 = Frame(second_win, bg='yellow', width=450, height=80, pady=3)
-top_padding2 = Frame(second_win, bg='yellow', width=450, height=80, pady=3)
 cnt_frame2 = Frame(second_win, bg='black', width=450, height=45, pady=50)
 btm_frame2 = Frame(second_win, bg='red', width=450, height=45, pady=3)
 footer_frame2 = Frame(second_win, bg='pink', width=450, height=45, pady=3)
