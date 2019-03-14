@@ -1,6 +1,8 @@
 from tkinter import *
 from tkinter import messagebox
 from collections import OrderedDict 
+from PIL import ImageTk, Image
+import os
 import math
 
 class Application(Frame):
@@ -249,7 +251,8 @@ second_win.title('Tabellone')
 
 # create all of the main containers
 top_frame2 = Frame(second_win, bg='yellow', width=450, height=80, pady=3)
-cnt_frame2 = Frame(second_win, bg='black', width=450, height=45, pady=50)
+cnt_frame2 = Frame(second_win, bg='black', height=45, pady=50)
+cnt_left_frame2 = Frame(second_win, bg='yellow', height=45, width=78, padx=50, pady=50)
 btm_frame2 = Frame(second_win, bg='red', width=450, height=45, pady=3)
 footer_frame2 = Frame(second_win, bg='pink', width=450, height=45, pady=3)
 
@@ -257,10 +260,11 @@ footer_frame2 = Frame(second_win, bg='pink', width=450, height=45, pady=3)
 second_win.grid_rowconfigure(1, weight=1)
 second_win.grid_columnconfigure(0, weight=1)
 
-top_frame2.grid(row=0, sticky="ns")
-cnt_frame2.grid(row=1, sticky="new")
-btm_frame2.grid(row=2, sticky="sew")
-footer_frame2.grid(row=3, sticky="sew")
+top_frame2.grid(row=0, sticky="ns", columnspan=2)
+cnt_frame2.grid(row=1, column=0, sticky="new")
+cnt_left_frame2.grid(row=1, column=1, sticky="ns")
+btm_frame2.grid(row=2, sticky="sew", columnspan=2)
+footer_frame2.grid(row=3, sticky="sew", columnspan=2)
 
 headerMessageSV = StringVar()
 headerMessageSV.set("Stiamo servendo il numero")
@@ -272,9 +276,9 @@ headerMessage.grid(row=1, column=0,sticky="nsew")
 ###PROBLEMA-------------------------------------------------------------
 currentNumberSV = StringVar()
 currentNumberLabel = Label( cnt_frame2, textvariable = currentNumberSV, relief = RAISED )
-currentNumberLabel.config(width=200)
+#currentNumberLabel.config(width=200)
 currentNumberLabel.config(font=("Courier bold", 200))
-currentNumberLabel.grid(row=1, column=0,sticky="nsew")
+currentNumberLabel.grid(sticky="nsew")
 currentNumberLabel.pack()
 
 ###PROBLEMA--------------------------------------------------------
@@ -284,8 +288,12 @@ bottomSV.set(s)
 bottomLabel = Label( btm_frame2, textvariable=bottomSV, relief=RAISED )
 bottomLabel.config(width=200)
 bottomLabel.config(font=("Courier", 100))
-bottomLabel.grid(row=0, column=0,sticky="nsew")
+bottomLabel.grid(sticky="nsew")
 bottomLabel.pack()
+
+#logo
+img = ImageTk.PhotoImage(Image.open("logo.gif"))
+imglabel = Label(cnt_left_frame2, image=img).grid(sticky="ns") 
 
 #permette di far scorrere la lista degli ordini sul tabellone
 def task():
