@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import messagebox
 from collections import OrderedDict 
-from PIL import ImageTk, Image
+from PIL import ImageTk, Image #Pillow
 import os
 import math
 
@@ -15,45 +15,60 @@ class Application_2(Frame):
             super().__init__(master)
             #self.pack()
 
+class HoverButton(Button):
+    def __init__(self, master, **kw):
+        Button.__init__(self,master=master,**kw)
+        self.defaultBackground = self["background"]
+        self.bind("<Enter>", self.on_enter)
+        self.bind("<Leave>", self.on_leave)
+
+    def on_enter(self, e):
+        self['background'] = self['activebackground']
+
+    def on_leave(self, e):
+        self['background'] = self.defaultBackground
+
 root = Tk()
 root.title('Client')
 
 # create all of the main containers
-top_frame = Frame(root, bg='gray', width=800, height=50, pady=3,borderwidth=1)
-ctr_frame = Frame(root, bg='orange', width=800, height=50, pady=3,borderwidth=1)
-btm_frame = Frame(root, bg='red', width=450, height=45, pady=3)
+top_frame = Frame(root, bg='gray', width=100, height=20, pady=3,borderwidth=1)
+#ctr_frame = Frame(root, bg='orange', width=100, height=50, pady=3,borderwidth=1)
+btm_frame = Frame(root, bg='red', width=150, height=45, pady=3)
 
 # layout all of the main containers
 root.grid_rowconfigure(0, weight=1)
 root.grid_columnconfigure(0, weight=1)
 
 top_frame.grid(row=0, sticky="nsew")
-ctr_frame.grid(row=1, sticky="new")
-btm_frame.grid(row=2, sticky="sew")
+#ctr_frame.grid(row=1, sticky="new")
+btm_frame.grid(row=1, sticky="sew")
 
 #top
-top_left = Frame(top_frame, bg='blue', width=100, height=190, borderwidth=10,padx=3, pady=3)
-top_left2 = Frame(top_frame, bg='brown', width=100, height=190, borderwidth=10, padx=3, pady=3)
-top_mid = Frame(top_frame, bg='grey', width=100, height=190, padx=3, pady=3)
-top_right = Frame(top_frame, bg='black', width=100, height=190, padx=3, pady=3, borderwidth=1)
+top_left = Frame(top_frame, bg='blue', width=50, height=20, borderwidth=10,padx=3, pady=3)
+top_left2 = Frame(top_frame, bg='blue', width=50, height=20, borderwidth=10, padx=3, pady=3)
+top_left3 = Frame(top_frame, bg='brown', width=50, height=20, borderwidth=10, padx=3, pady=3)
+top_mid = Frame(top_frame, bg='grey', width=50, height=20, padx=3, pady=3)
+top_right = Frame(top_frame, bg='black', width=20, height=20, padx=3, pady=3, borderwidth=1)
 
 top_left.grid(row=0, column=0, sticky="nsw")
 top_left2.grid(row=0, column=1, sticky="nsw")
-top_mid.grid(row=0, column=2, sticky="nsew")
+top_left3.grid(row=0, column=2, sticky="nsw")
+top_mid.grid(row=0, column=3, sticky="nsew")
 top_right.grid(row=0, column=9, sticky="ne")
 
 #center
 var_client = StringVar()
 var_client.set("")
-label_client = Label( ctr_frame, textvariable=var_client)
-label_client.config(width=200)
+label_client = Label( top_left2, textvariable=var_client)
+label_client.config(width=5)
 label_client.config(font=("Courier", 50))
 label_client.pack()
 
 for x in range(10):
     Grid.columnconfigure(btm_frame, x, weight=1)
 
-for y in range(5):
+for y in range(10):
     Grid.rowconfigure(btm_frame, y, weight=1)
 
 # Rimuove un elemento da un dizionario
@@ -65,91 +80,55 @@ def removekey(d, key):
     return r
 
 contatore = 1 
+var_client.set(contatore)
 #Asse x/y giglia pulsanti
 x = 0
 y = 0
 
 numeroCorrente = 1 #numeroCorrente mostrato sul tabellone
-#listaOrdini = {} #dizionario contenente gli ordni
-listaOrdini = OrderedDict() 
+listaOrdini = OrderedDict() #dizionario ordinato contenente gli ordni
 btnID = {} #dizionario contenente gli identificatori dei pulsanti nella griglia
 
 sor = "" # stringa ordinata contenente gli ordini
 s = sor # stringa mostrata sul tabellone
 
-limite = 999 #limite contatore
+limite = 99 #limite contatore
 
 #aggiungi pulsante
 #id: button id
-def addButton(id):
-    btn = Button(btm_frame,text=id, height = 5, width = 5, activebackground='#3E4149')
-    btn['command'] = lambda idx=id, binst=btn: click(idx, binst)
+def addBtnToGrid(id):
+    btn = HoverButton(btm_frame,text=id, height = 3, width = 5, activebackground='#585f72')
+    btn['command'] = lambda idx=id, binst=btn: removeBtnFromGrid(idx, binst)
+    btn.config(font=("Courier bold", 8))
     btn.grid(column=(id-1)%10, row=int(math.floor((id-1)/10)), sticky="nwe")
-
     btnID[str(id)] = (id,btn) #aggiungi l'id del pulsante inserito nella lista
 
-# funzione che inserisce un'ordine alla pressione del pulsantes
+# funzione che inserisce un'ordine alla pressione del pulsante
 def insertOrderByButton():
-    global x
-    global y
-    global contatore
-    global numeroCorrente
-    global listaOrdini
-    global s
-    global sor
-    global btnID
-
-    print(listaOrdini)
-    print(contatore)
+    global x, y
+    global contatore, numeroCorrente
+    global listaOrdini, btnID
+    global s, sor 
 
     if (len(listaOrdini)+1>limite):
         messagebox.showinfo( "Attenzione!", "La coda degli ordini è piena!")
     else: # la coda non è piena -> almeno un numero libero
-
         if (str(contatore) in listaOrdini):
             #se il numero inserito è già presente cerca il primo numero libero
             while str(contatore) in listaOrdini:
                 contatore +=1
                 numeroCorrente +=1
-                print(contatore)
 
         if not(str(contatore) in listaOrdini): #else
-
-            addButton(contatore) # crea un nuovo pulsante da inserire nella griglia
-
-            listaOrdini[str(contatore)] = contatore #aggiungi l'ordine alla lista ordini
-            
-
-            rv_listaOrdini = removekey(listaOrdini, str(contatore)) # dizionario senza l'ultimo ordine inserito (??)
-
-            sor = ' - '.join(str(k) for k in sorted(rv_listaOrdini.values())) # lista ordina degli elementi presenti nel dizionario
-
-            if(len(rv_listaOrdini) > 0):
-                sor += ' - '
-            if(len(rv_listaOrdini) == 1):
-                sor = sor[:-2]
-            
-            s = sor
-            print(sorted(rv_listaOrdini.values()))
-
-            numeroCorrente = contatore #aggiorna il numero corrente
-            currentNumberSV.set(numeroCorrente) # aggiorna il numero mostrato sul tabellone
-            var_client.set(numeroCorrente)
-            
-            
+            addOrder(contatore)
             contatore +=1
             #resetta il contatore se supera il limite
             if(contatore>limite):
                 contatore=1
 
 #rimuove il pulsante specificato dall'id e binst, ed aggiorna la stringa s
-def click(idx,binst):
-    global s
-    global listaOrdini
-    global sor
-    print("removing")
-    print(idx)
-    print(binst)
+def removeBtnFromGrid(idx,binst):
+    global s, sor, listaOrdini
     del listaOrdini[str(idx)]
     sor = ' - '.join(str(k) for k in sorted(listaOrdini.values()))
     sor += ' - '
@@ -158,8 +137,91 @@ def click(idx,binst):
 
 
 # create the widgets for the top frame
-s_button = Button(top_left, text = "Successivo", command = insertOrderByButton,height = 10, width = 30)
+#s_button = Button(top_left, text = "Successivo", command = insertOrderByButton,height = 10, width = 30)
 
+def increase():
+    global contatore
+    contatore+=1
+    if(contatore>limite):
+                contatore=1
+    var_client.set(contatore)
+
+def decrease():
+    global contatore
+    contatore-=1
+    if(contatore<1):
+                contatore=limite
+    var_client.set(contatore)
+
+
+def addOrder(number):
+    global listaOrdini
+    global sor, s
+    if (len(listaOrdini)+1>limite):
+        messagebox.showinfo( "Attenzione!", "La coda degli ordini è piena!")
+    if str(number) in listaOrdini:
+            deletemsg(number)
+    else:
+        numeroCorrente = number
+        addBtnToGrid(number) # crea un nuovo pulsante da inserire nella griglia
+        listaOrdini[str(number)] = number #aggiungi l'ordine alla lista ordini
+        
+        rv_listaOrdini = removekey(listaOrdini, str(number)) # dizionario senza l'ultimo ordine inserito (??)
+
+        sor = ' - '.join(str(k) for k in sorted(rv_listaOrdini.values())) # lista ordina degli elementi presenti nel dizionario
+
+        if(len(rv_listaOrdini) > 0):
+            sor += ' - '
+        if(len(rv_listaOrdini) == 1):
+            sor = sor[:-2]
+        
+        s = sor
+
+        numeroCorrente = number #aggiorna il numero corrente
+        currentNumberSV.set(numeroCorrente) # aggiorna il numero mostrato sul tabellone
+        
+
+def addOrderBtn():
+    global contatore
+    addOrder(contatore)
+    contatore+=1
+    if(contatore>limite):
+        contatore=1
+    var_client.set(contatore)
+
+# ripristina i valori iniziali
+def reset():
+    global contatore
+    global x, y
+    global numeroCorrente
+    global listaOrdini
+    global btnID
+    global sor, s
+    result = messagebox.askquestion("ATTENZIONE!","Si vuole davvero ripristinare il sistema?", icon='warning')
+    if result == 'yes':
+        print("Deleted")
+        contatore = 1 
+        var_client.set(contatore)
+        x = 0
+        y = 0
+        numeroCorrente = 1 #numeroCorrente mostrato sul tabellone
+        tempList = listaOrdini.copy()
+        for ordine in tempList:
+            removeBtnFromGrid(btnID[str(ordine)][0],btnID[str(ordine)][1])
+        listaOrdini = OrderedDict()
+        btnID = {} #dizionario contenente gli identificatori dei pulsanti nella griglia
+
+        sor = "" # stringa ordinata contenente gli ordini
+        s = sor # stringa mostrata sul tabellone
+        currentNumberSV.set("")
+    else:
+        print("did nothing")
+
+add_btn = Button(top_left, text = "Inserisci", command = addOrderBtn,height = 5, width = 20)
+plus_btn = Button(top_left, text = "+", command = increase,height = 5, width = 10)
+minus_btn = Button(top_left, text = "-", command = decrease,height = 5, width = 10)
+#reset_btn = Button(top_left, text = "Reset", command = reset,height = 10, width = 10)
+# Annulla ordine
 def undoOrder():
     global listaOrdini
     global btnID
@@ -168,13 +230,13 @@ def undoOrder():
         removedOrder = tempList.popitem()
         
         removed_key = removedOrder[0]
-        click(btnID[removed_key][0],btnID[removed_key][1])
+        removeBtnFromGrid(btnID[removed_key][0],btnID[removed_key][1])
     else:
         messagebox.showinfo( "Errore!", "Impossibile annullare, la coda degli ordini è vuota", icon='error')
 
-undo_button = Button(top_left2, text = "Annulla", command = undoOrder,height = 10, width = 30)
-
-entry = Entry(top_right, background="pink",font=("Courier", 28))
+#undo_button = Button(top_left3, text = "Annulla", command = undoOrder,height = 10, width = 30)
+reset_btn = Button(top_left3, text = "Reset", command = reset,height = 5, width = 15)
+entry = Entry(top_right, background="pink",font=("Courier", 28), width=10)
 
 #elimina se gia presente
 def deletemsg(numero):
@@ -182,8 +244,7 @@ def deletemsg(numero):
     result = messagebox.askquestion("Attenzione!", str(numero) + " è già presente nella coda. Si desidera eliminarlo?", icon='warning')
     if result == 'yes':
         print("Deleted")
-        print(btnID[str(numero)])
-        click(btnID[str(numero)][0],btnID[str(numero)][1])
+        removeBtnFromGrid(btnID[str(numero)][0],btnID[str(numero)][1])
     else:
         print("I'm Not Deleted Yet")
 
@@ -198,29 +259,8 @@ def insertOrderByEntry():
     if testo == '': #TODO:deve essere un numero
         messagebox.showinfo( "Attenzione!", "Inserire un numero", icon='warning')
     else:
-        num = int(testo)
-        if testo in listaOrdini:
-            deletemsg(num)
-        else:
-            numeroCorrente = num
-            currentNumberSV.set(numeroCorrente)
-            var_client.set(numeroCorrente)
-            addButton(num)
-
-            listaOrdini[str(num)] = num
-
-            rv_listaOrdini = removekey(listaOrdini, str(num))
-
-            sor = ' - '.join(str(k) for k in sorted(rv_listaOrdini.values()))
-
-            if(len(rv_listaOrdini) > 0):
-                sor += ' - '
-            if(len(rv_listaOrdini) == 1):
-                sor = sor[:-2]
-
-            s = sor
-            currentNumberSV.set(numeroCorrente)
-            print(' '.join(rv_listaOrdini.keys()))
+            num = int(testo)
+            addOrder(num)
 
     entry.delete(0, 'end')
 
@@ -230,11 +270,14 @@ def get(event):
 
 entry.bind('<Return>', get)
 
-m_button = Button(top_right, text = "Inserisci", command=insertOrderByEntry, height = 6, width = 20)
+m_button = Button(top_right, text = "Inserisci", command=insertOrderByEntry, height = 5, width = 15)
 
 # layout the widgets in the top frame
-s_button.grid(row=0, column=0, columnspan=3,sticky="ew")
-undo_button.grid(row=0, column=1, columnspan=3,sticky="ew")
+#s_button.grid(row=0, column=0, columnspan=3,sticky="ew")
+plus_btn.grid(row=0, column=0, columnspan=3,sticky="ew")
+minus_btn.grid(row=1, column=0, columnspan=3,sticky="ew")
+add_btn.grid(row=0, column=8, columnspan=3, rowspan=2,sticky="ew", padx=5)
+reset_btn.grid(row=0, column=1, columnspan=3,sticky="ew")
 entry.grid(row=1, column=0, sticky="w", padx=20,)
 m_button.grid(row=1, column=1, sticky="w", padx=20)
 
@@ -250,42 +293,42 @@ app2 = Application_2(second_win)
 second_win.title('Tabellone')
 
 # create all of the main containers
-top_frame2 = Frame(second_win, bg='yellow', width=450, height=80, pady=3)
-cnt_frame2 = Frame(second_win, bg='black', height=45, pady=50)
-cnt_left_frame2 = Frame(second_win, bg='yellow', height=45, width=78, padx=50, pady=50)
-btm_frame2 = Frame(second_win, bg='red', width=450, height=45, pady=3)
-footer_frame2 = Frame(second_win, bg='pink', width=450, height=45, pady=3)
+top_frame2 = Frame(second_win, bg='yellow', width=150)
+cnt_frame2 = Frame(second_win, pady=100)
+cnt_left_frame2 = Frame(second_win, bg='grey', width=78, padx=50, pady=50)
+btm_frame2 = Frame(second_win, bg='red', width=150, pady=15)
+footer_frame2 = Frame(second_win, width=150, pady=3)
 
 # layout all of the main containers
-second_win.grid_rowconfigure(1, weight=1)
+second_win.grid_rowconfigure(0, weight=1)
 second_win.grid_columnconfigure(0, weight=1)
 
-top_frame2.grid(row=0, sticky="ns", columnspan=2)
-cnt_frame2.grid(row=1, column=0, sticky="new")
+top_frame2.grid(row=0, sticky="n", columnspan=2)
+cnt_frame2.grid(row=1, column=0, sticky="nsew")
 cnt_left_frame2.grid(row=1, column=1, sticky="ns")
-btm_frame2.grid(row=2, sticky="sew", columnspan=2)
-footer_frame2.grid(row=3, sticky="sew", columnspan=2)
+btm_frame2.grid(row=2,column=0, sticky="sew", columnspan=2)
+footer_frame2.grid(row=3,column=0, sticky="sew", columnspan=2)
 
 headerMessageSV = StringVar()
 headerMessageSV.set("Stiamo servendo il numero")
 headerMessage = Label( top_frame2, textvariable=headerMessageSV)
 headerMessage.config(font=("Courier", 40))
-headerMessage.grid(row=1, column=0,sticky="nsew")
+headerMessage.grid(row=0, column=0,sticky="new")
 
 
 ###PROBLEMA-------------------------------------------------------------
 currentNumberSV = StringVar()
-currentNumberLabel = Label( cnt_frame2, textvariable = currentNumberSV, relief = RAISED )
+currentNumberLabel = Label( cnt_frame2, textvariable = currentNumberSV )
 #currentNumberLabel.config(width=200)
 currentNumberLabel.config(font=("Courier bold", 200))
-currentNumberLabel.grid(sticky="nsew")
+currentNumberLabel.grid(row=1, column=0,sticky="nswe")
 currentNumberLabel.pack()
 
 ###PROBLEMA--------------------------------------------------------
 
 bottomSV = StringVar()
 bottomSV.set(s)
-bottomLabel = Label( btm_frame2, textvariable=bottomSV, relief=RAISED )
+bottomLabel = Label( btm_frame2, textvariable=bottomSV)
 bottomLabel.config(width=200)
 bottomLabel.config(font=("Courier", 100))
 bottomLabel.grid(sticky="nsew")
@@ -293,14 +336,13 @@ bottomLabel.pack()
 
 #logo
 img = ImageTk.PhotoImage(Image.open("logo.gif"))
-imglabel = Label(cnt_left_frame2, image=img).grid(sticky="ns") 
+Label(cnt_left_frame2, image=img).grid(sticky="ns") 
 
 #permette di far scorrere la lista degli ordini sul tabellone
 def task():
     global s
     if len(s)>6:
         s = s[1:] + s[0]
-    print(s)
     bottomSV.set(s)
     
     second_win.after(1000, task)  # reschedule event in 2 seconds
