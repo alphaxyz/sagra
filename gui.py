@@ -79,7 +79,7 @@ def removekey(d, key):
     del r[key]
     return r
 
-contatore = 1 
+contatore = 0
 var_client.set(contatore)
 #Asse x/y giglia pulsanti
 x = 0
@@ -100,7 +100,8 @@ def addBtnToGrid(id):
     btn = HoverButton(btm_frame,text=id, height = 3, width = 5, activebackground='#585f72')
     btn['command'] = lambda idx=id, binst=btn: removeBtnFromGrid(idx, binst)
     btn.config(font=("Courier bold", 8))
-    btn.grid(column=(id-1)%10, row=int(math.floor((id-1)/10)), sticky="nwe")
+    #btn.grid(column=(id-1)%10, row=int(math.floor((id-1)/10)), sticky="nwe")
+    btn.grid(column=(id)%10, row=int(math.floor((id)/10)), sticky="nwe")
     btnID[str(id)] = (id,btn) #aggiungi l'id del pulsante inserito nella lista
 
 # funzione che inserisce un'ordine alla pressione del pulsante
@@ -124,7 +125,7 @@ def insertOrderByButton():
             contatore +=1
             #resetta il contatore se supera il limite
             if(contatore>limite):
-                contatore=1
+                contatore=0
 
 #rimuove il pulsante specificato dall'id e binst, ed aggiorna la stringa s
 def removeBtnFromGrid(idx,binst):
@@ -143,13 +144,13 @@ def increase():
     global contatore
     contatore+=1
     if(contatore>limite):
-                contatore=1
+                contatore=0
     var_client.set(contatore)
 
 def decrease():
     global contatore
     contatore-=1
-    if(contatore<1):
+    if(contatore<0):
                 contatore=limite
     var_client.set(contatore)
 
@@ -186,7 +187,7 @@ def addOrderBtn():
     addOrder(contatore)
     contatore+=1
     if(contatore>limite):
-        contatore=1
+        contatore=0
     var_client.set(contatore)
 
 # ripristina i valori iniziali
@@ -200,7 +201,7 @@ def reset():
     result = messagebox.askquestion("ATTENZIONE!","Si vuole davvero ripristinare il sistema?", icon='warning')
     if result == 'yes':
         print("Deleted")
-        contatore = 1 
+        contatore = 0
         var_client.set(contatore)
         x = 0
         y = 0
@@ -295,7 +296,7 @@ second_win.title('Tabellone')
 # create all of the main containers
 top_frame2 = Frame(second_win, bg='yellow', width=150)
 cnt_frame2 = Frame(second_win, pady=100)
-cnt_left_frame2 = Frame(second_win, bg='grey', width=78, padx=50, pady=50)
+cnt_left_frame2 = Frame(second_win, width=78, padx=50, pady=50)
 btm_frame2 = Frame(second_win, bg='red', width=150, pady=15)
 footer_frame2 = Frame(second_win, width=150, pady=3)
 
