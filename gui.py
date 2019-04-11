@@ -4,6 +4,48 @@ from collections import OrderedDict
 from PIL import ImageTk, Image #Pillow
 import os
 import math
+import configparser
+"""
+fnt = {
+'headermessage': 40,
+'btngrid': 8,
+'varclient': 50,
+'currentnumberlabel'; 200,
+}"""
+fnt = {}
+def initConf():
+    headerMessage_def = 40
+    btnGrid_def = 8
+    varclient_def = 50
+    currentnumberlabel_def = 200
+    try:
+        file = open('sagra.conf', 'r')
+    except IOError:
+        file = open('sagra.conf', 'w')
+        file.write('[fonts]\n')
+        file.write('headermessage = '+str(headerMessage_def)+'\n')
+        file.write('btngrid = '+str(btnGrid_def)+'\n')
+        file.write('varclient = '+str(varclient_def)+'\n')
+        file.write('currentnumberlabel = '+str(currentnumberlabel_def)+'\n')
+        file.close()
+
+def confParse():
+    global fnt
+    
+    try:
+        file = open('sagra.conf', 'r')
+    except IOError:
+        print('error')
+    config = configparser.ConfigParser()
+    config.read('sagra.conf')
+    if 'fonts' in config:
+        fonts = config['fonts']
+        for key in config['fonts']:
+            fnt[key] =int(fonts[key])
+
+initConf()
+confParse()
+print(fnt)
 
 class Application(Frame):
         def __init__(self, master=None):
@@ -30,6 +72,42 @@ class HoverButton(Button):
 
 root = Tk()
 root.title('Client')
+
+# Menu
+def create_window():
+    global fnt
+    window = Toplevel(root)
+    e = Entry(window, background="pink",font=("Courier", 28), width=10)
+    e.insert(0, fnt['headermessage'])
+    b = Button(window, text="Create new window", command='#')
+    e.grid(row=0, column=0, columnspan=3,sticky="nsew")
+    b.grid(row=0, column=3, columnspan=3,sticky="nsew")
+
+    e2 = Entry(window, background="pink",font=("Courier", 28), width=10)
+    e2.insert(0, fnt['btngrid'])
+    b2 = Button(window, text="Create new window", command='#')
+    e2.grid(row=1, column=0, columnspan=3,sticky="nsew")
+    b2.grid(row=1, column=3, columnspan=3,sticky="nsew")
+
+    e3 = Entry(window, background="pink",font=("Courier", 28), width=10)
+    e3.insert(0, fnt['varclient'])
+    b3 = Button(window, text="Create new window", command='#')
+    e3.grid(row=2, column=0, columnspan=3,sticky="nsew")
+    b3.grid(row=2, column=3, columnspan=3,sticky="nsew")
+
+    e4 = Entry(window, background="pink",font=("Courier", 28), width=10)
+    e4.insert(0, fnt['currentnumberlabel'])
+    b4 = Button(window, text="Create new window", command='#')
+    e4.grid(row=3, column=0, columnspan=3,sticky="nsew")
+    b4.grid(row=3, column=3, columnspan=3,sticky="nsew")
+
+menubar = Menu(root)
+filemenu = Menu(menubar, tearoff=0)
+filemenu.add_command(label="Fonts", command=create_window)
+filemenu.add_separator()
+filemenu.add_command(label="Exit", command=root.quit)
+menubar.add_cascade(label="File", menu=filemenu)
+root.config(menu=menubar)
 
 # create all of the main containers
 top_frame = Frame(root, bg='gray', width=100, height=20, pady=3,borderwidth=1)
