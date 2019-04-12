@@ -73,40 +73,40 @@ class HoverButton(Button):
 root = Tk()
 root.title('Client')
 
+def saveConf(x):
+    print(x)
+
 # Menu
 def create_window():
     global fnt
     window = Toplevel(root)
     e = Entry(window, background="pink",font=("Courier", 28), width=10)
     e.insert(0, fnt['headermessage'])
-    b = Button(window, text="Create new window", command='#')
     e.grid(row=0, column=0, columnspan=3,sticky="nsew")
-    b.grid(row=0, column=3, columnspan=3,sticky="nsew")
 
     e2 = Entry(window, background="pink",font=("Courier", 28), width=10)
     e2.insert(0, fnt['btngrid'])
-    b2 = Button(window, text="Create new window", command='#')
     e2.grid(row=1, column=0, columnspan=3,sticky="nsew")
-    b2.grid(row=1, column=3, columnspan=3,sticky="nsew")
 
     e3 = Entry(window, background="pink",font=("Courier", 28), width=10)
     e3.insert(0, fnt['varclient'])
-    b3 = Button(window, text="Create new window", command='#')
     e3.grid(row=2, column=0, columnspan=3,sticky="nsew")
-    b3.grid(row=2, column=3, columnspan=3,sticky="nsew")
 
     e4 = Entry(window, background="pink",font=("Courier", 28), width=10)
     e4.insert(0, fnt['currentnumberlabel'])
-    b4 = Button(window, text="Create new window", command='#')
     e4.grid(row=3, column=0, columnspan=3,sticky="nsew")
-    b4.grid(row=3, column=3, columnspan=3,sticky="nsew")
+
+    b = Button(window, text="Salva", command=saveConf(e.get()))
+    b.grid(row=0, column=3, columnspan=3, rowspan=4, sticky="nsew")
+    window.mainloop()
+
 
 menubar = Menu(root)
 filemenu = Menu(menubar, tearoff=0)
 filemenu.add_command(label="Fonts", command=create_window)
 filemenu.add_separator()
 filemenu.add_command(label="Exit", command=root.quit)
-menubar.add_cascade(label="File", menu=filemenu)
+menubar.add_cascade(label="Options", menu=filemenu)
 root.config(menu=menubar)
 
 # create all of the main containers
@@ -140,7 +140,7 @@ var_client = StringVar()
 var_client.set("")
 label_client = Label( top_left2, textvariable=var_client)
 label_client.config(width=5)
-label_client.config(font=("Courier", 50))
+label_client.config(font=("Courier", fnt['varclient']))
 label_client.pack()
 
 for x in range(10):
@@ -177,7 +177,7 @@ limite = 99 #limite contatore
 def addBtnToGrid(id):
     btn = HoverButton(btm_frame,text=id, height = 3, width = 5, activebackground='#585f72')
     btn['command'] = lambda idx=id, binst=btn: removeBtnFromGrid(idx, binst)
-    btn.config(font=("Courier bold", 8))
+    btn.config(font=("Courier bold", fnt['btngrid']))
     #btn.grid(column=(id-1)%10, row=int(math.floor((id-1)/10)), sticky="nwe")
     btn.grid(column=(id)%10, row=int(math.floor((id)/10)), sticky="nwe")
     btnID[str(id)] = (id,btn) #aggiungi l'id del pulsante inserito nella lista
@@ -391,7 +391,7 @@ footer_frame2.grid(row=3,column=0, sticky="sew", columnspan=2)
 headerMessageSV = StringVar()
 headerMessageSV.set("Stiamo servendo il numero")
 headerMessage = Label( top_frame2, textvariable=headerMessageSV)
-headerMessage.config(font=("Courier", 40))
+headerMessage.config(font=("Courier", fnt['headermessage']))
 headerMessage.grid(row=0, column=0,sticky="new")
 
 
@@ -399,7 +399,7 @@ headerMessage.grid(row=0, column=0,sticky="new")
 currentNumberSV = StringVar()
 currentNumberLabel = Label( cnt_frame2, textvariable = currentNumberSV )
 #currentNumberLabel.config(width=200)
-currentNumberLabel.config(font=("Courier bold", 200))
+currentNumberLabel.config(font=("Courier bold", currentnumberlabel['currentnumberlabel']))
 currentNumberLabel.grid(row=1, column=0,sticky="nswe")
 currentNumberLabel.pack()
 
