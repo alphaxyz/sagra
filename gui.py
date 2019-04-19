@@ -13,6 +13,7 @@ fnt = {
 'currentnumberlabel'; 200,
 }"""
 fnt = {}
+entries = {}
 def initConf():
     headerMessage_def = 40
     btnGrid_def = 8
@@ -73,31 +74,63 @@ class HoverButton(Button):
 root = Tk()
 root.title('Client')
 
-def saveConf(x):
-    print(x)
+def saveEntriesVaule():
+    global entries
+    config = configparser.ConfigParser()
+    config.read('sagra.conf')
+    e = entries['headermessage']
+    e2 = entries['btngrid']
+    e3 = entries['varclient']
+    e4 = entries['currentnumberlabel']
+    config.set('fonts','headermessage', e.get())
+    config.set('fonts','btngrid', e2.get())
+    config.set('fonts','varclient', e3.get())
+    config.set('fonts','currentnumberlabel', e4.get()) 
+    with open('sagra.conf', 'w') as configfile:
+        config.write(configfile)
+    print(e.get())
 
 # Menu
 def create_window():
     global fnt
+    global entries
     window = Toplevel(root)
+    window.title('Dimensione font')
+    e_label = Label( window, text="Striamo serv...")
+    e_label.grid(row=0, column=0, columnspan=3,sticky="nsew")
     e = Entry(window, background="pink",font=("Courier", 28), width=10)
     e.insert(0, fnt['headermessage'])
-    e.grid(row=0, column=0, columnspan=3,sticky="nsew")
-
+    e.grid(row=0, column=3, columnspan=3,sticky="nsew")
+    entries['headermessage']=e
+ 
+    e2_label = Label( window, text="Griglia pulsanti")
+    e2_label.grid(row=1, column=0, columnspan=3,sticky="nsew")
     e2 = Entry(window, background="pink",font=("Courier", 28), width=10)
     e2.insert(0, fnt['btngrid'])
-    e2.grid(row=1, column=0, columnspan=3,sticky="nsew")
+    e2.grid(row=1, column=3, columnspan=3,sticky="nsew")
+    entries['btngrid']=e2
 
+    e3_label = Label( window, text="Numero corrente (client)")
+    e3_label.grid(row=2, column=0, columnspan=3,sticky="nsew")
     e3 = Entry(window, background="pink",font=("Courier", 28), width=10)
     e3.insert(0, fnt['varclient'])
-    e3.grid(row=2, column=0, columnspan=3,sticky="nsew")
+    e3.grid(row=2, column=3, columnspan=3,sticky="nsew")
+    entries['varclient']=e3
 
+    e4_label = Label( window, text="Numero corrente (tabellone)")
+    e4_label.grid(row=3, column=0, columnspan=3,sticky="nsew")
     e4 = Entry(window, background="pink",font=("Courier", 28), width=10)
     e4.insert(0, fnt['currentnumberlabel'])
-    e4.grid(row=3, column=0, columnspan=3,sticky="nsew")
+    e4.grid(row=3, column=3, columnspan=3,sticky="nsew")
+    entries['currentnumberlabel']=e4
 
-    b = Button(window, text="Salva", command=saveConf(e.get()))
-    b.grid(row=0, column=3, columnspan=3, rowspan=4, sticky="nsew")
+    bottom_label = Label( window, text="Per rendere effettivi i cambiamenti riavviare il programma", fg="red")
+    bottom_label.grid(row=4, column=0, columnspan=9,sticky="nsew")
+
+
+    b = Button(window, text="Salva", command=saveEntriesVaule)
+    b.grid(row=0, column=6, columnspan=3, rowspan=4, sticky="nsew")
+
     window.mainloop()
 
 
@@ -399,7 +432,7 @@ headerMessage.grid(row=0, column=0,sticky="new")
 currentNumberSV = StringVar()
 currentNumberLabel = Label( cnt_frame2, textvariable = currentNumberSV )
 #currentNumberLabel.config(width=200)
-currentNumberLabel.config(font=("Courier bold", currentnumberlabel['currentnumberlabel']))
+currentNumberLabel.config(font=("Courier bold", fnt['currentnumberlabel']))
 currentNumberLabel.grid(row=1, column=0,sticky="nswe")
 currentNumberLabel.pack()
 
