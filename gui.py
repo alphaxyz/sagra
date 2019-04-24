@@ -98,28 +98,28 @@ def create_window():
     window.title('Dimensione font')
     e_label = Label( window, text="Striamo serv...")
     e_label.grid(row=0, column=0, columnspan=3,sticky="nsew")
-    e = Entry(window, background="pink",font=("Courier", 28), width=10)
+    e = Entry(window,font=("Courier", 28), width=10)
     e.insert(0, fnt['headermessage'])
     e.grid(row=0, column=3, columnspan=3,sticky="nsew")
     entries['headermessage']=e
  
     e2_label = Label( window, text="Griglia pulsanti")
     e2_label.grid(row=1, column=0, columnspan=3,sticky="nsew")
-    e2 = Entry(window, background="pink",font=("Courier", 28), width=10)
+    e2 = Entry(window,font=("Courier", 28), width=10)
     e2.insert(0, fnt['btngrid'])
     e2.grid(row=1, column=3, columnspan=3,sticky="nsew")
     entries['btngrid']=e2
 
     e3_label = Label( window, text="Numero corrente (client)")
     e3_label.grid(row=2, column=0, columnspan=3,sticky="nsew")
-    e3 = Entry(window, background="pink",font=("Courier", 28), width=10)
+    e3 = Entry(window,font=("Courier", 28), width=10)
     e3.insert(0, fnt['varclient'])
     e3.grid(row=2, column=3, columnspan=3,sticky="nsew")
     entries['varclient']=e3
 
     e4_label = Label( window, text="Numero corrente (tabellone)")
     e4_label.grid(row=3, column=0, columnspan=3,sticky="nsew")
-    e4 = Entry(window, background="pink",font=("Courier", 28), width=10)
+    e4 = Entry(window,font=("Courier", 28), width=10)
     e4.insert(0, fnt['currentnumberlabel'])
     e4.grid(row=3, column=3, columnspan=3,sticky="nsew")
     entries['currentnumberlabel']=e4
@@ -136,10 +136,10 @@ def create_window():
 
 menubar = Menu(root)
 filemenu = Menu(menubar, tearoff=0)
-filemenu.add_command(label="Fonts", command=create_window)
+filemenu.add_command(label="Font", command=create_window)
 filemenu.add_separator()
-filemenu.add_command(label="Exit", command=root.quit)
-menubar.add_cascade(label="Options", menu=filemenu)
+filemenu.add_command(label="Esci", command=root.quit)
+menubar.add_cascade(label="Opzioni", menu=filemenu)
 root.config(menu=menubar)
 
 # create all of the main containers
