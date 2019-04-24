@@ -89,6 +89,7 @@ def saveEntriesVaule():
     with open('sagra.conf', 'w') as configfile:
         config.write(configfile)
     print(e.get())
+    messagebox.showinfo( "Info", "Impostazioni salvate")
 
 # Menu
 def create_window():
@@ -344,7 +345,7 @@ def undoOrder():
         removed_key = removedOrder[0]
         removeBtnFromGrid(btnID[removed_key][0],btnID[removed_key][1])
     else:
-        messagebox.showinfo( "Errore!", "Impossibile annullare, la coda degli ordini è vuota", icon='error')
+        messagebox.showerror( "Errore", "Impossibile annullare, la coda degli ordini è vuota", icon='error')
 
 #undo_button = Button(top_left3, text = "Annulla", command = undoOrder,height = 10, width = 30)
 reset_btn = Button(top_left3, text = "Reset", command = reset,height = 5, width = 15)
@@ -369,7 +370,7 @@ def insertOrderByEntry():
     global btnID
     testo = entry.get()
     if testo == '': #TODO:deve essere un numero
-        messagebox.showinfo( "Attenzione!", "Inserire un numero", icon='warning')
+        messagebox.showwarning( "Attenzione!", "Inserire un numero")
     else:
             num = int(testo)
             addOrder(num)
@@ -447,8 +448,12 @@ bottomLabel.grid(sticky="nsew")
 bottomLabel.pack()
 
 #logo
-img = ImageTk.PhotoImage(Image.open("logo.gif"))
-Label(cnt_left_frame2, image=img).grid(sticky="ns") 
+try:
+    img = ImageTk.PhotoImage(Image.open("logo.gif"))
+    Label(cnt_left_frame2, image=img).grid(sticky="ns")
+except FileNotFoundError:
+    messagebox.showwarning( "Attenzione", "Nessun logo trovato!")
+ 
 
 #permette di far scorrere la lista degli ordini sul tabellone
 def task():
