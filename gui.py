@@ -452,7 +452,7 @@ try:
     img = ImageTk.PhotoImage(Image.open("logo.gif"))
     Label(cnt_left_frame2, image=img).grid(sticky="ns")
 except FileNotFoundError:
-    messagebox.showwarning( "Attenzione", "Nessun logo trovato!")
+    messagebox.showwarning("Attenzione", "Nessun logo trovato!")
  
 
 #permette di far scorrere la lista degli ordini sul tabellone
@@ -466,6 +466,5 @@ def task():
 
 second_win.after(2000, task)
 root.mainloop()
-
 
 root.mainloop()
