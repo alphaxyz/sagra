@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import messagebox
 from collections import OrderedDict 
-from PIL import ImageTk, Image #Pillow
+from PIL import ImageTk, Image
 import os
 import math
 import configparser
