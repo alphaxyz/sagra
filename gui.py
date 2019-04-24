@@ -4,6 +4,49 @@ from collections import OrderedDict
 from PIL import ImageTk, Image #Pillow
 import os
 import math
+import configparser
+"""
+fnt = {
+'headermessage': 40,
+'btngrid': 8,
+'varclient': 50,
+'currentnumberlabel'; 200,
+}"""
+fnt = {}
+entries = {}
+def initConf():
+    headerMessage_def = 40
+    btnGrid_def = 8
+    varclient_def = 50
+    currentnumberlabel_def = 200
+    try:
+        file = open('sagra.conf', 'r')
+    except IOError:
+        file = open('sagra.conf', 'w')
+        file.write('[fonts]\n')
+        file.write('headermessage = '+str(headerMessage_def)+'\n')
+        file.write('btngrid = '+str(btnGrid_def)+'\n')
+        file.write('varclient = '+str(varclient_def)+'\n')
+        file.write('currentnumberlabel = '+str(currentnumberlabel_def)+'\n')
+        file.close()
+
+def confParse():
+    global fnt
+    
+    try:
+        file = open('sagra.conf', 'r')
+    except IOError:
+        print('error')
+    config = configparser.ConfigParser()
+    config.read('sagra.conf')
+    if 'fonts' in config:
+        fonts = config['fonts']
+        for key in config['fonts']:
+            fnt[key] =int(fonts[key])
+
+initConf()
+confParse()
+print(fnt)
 
 class Application(Frame):
         def __init__(self, master=None):
@@ -30,6 +73,75 @@ class HoverButton(Button):
 
 root = Tk()
 root.title('Client')
+
+def saveEntriesVaule():
+    global entries
+    config = configparser.ConfigParser()
+    config.read('sagra.conf')
+    e = entries['headermessage']
+    e2 = entries['btngrid']
+    e3 = entries['varclient']
+    e4 = entries['currentnumberlabel']
+    config.set('fonts','headermessage', e.get())
+    config.set('fonts','btngrid', e2.get())
+    config.set('fonts','varclient', e3.get())
+    config.set('fonts','currentnumberlabel', e4.get()) 
+    with open('sagra.conf', 'w') as configfile:
+        config.write(configfile)
+    print(e.get())
+    messagebox.showinfo( "Info", "Impostazioni salvate")
+
+# Menu
+def create_window():
+    global fnt
+    global entries
+    window = Toplevel(root)
+    window.title('Dimensione font')
+    e_label = Label( window, text="Striamo serv...")
+    e_label.grid(row=0, column=0, columnspan=3,sticky="nsew")
+    e = Entry(window,font=("Courier", 28), width=10)
+    e.insert(0, fnt['headermessage'])
+    e.grid(row=0, column=3, columnspan=3,sticky="nsew")
+    entries['headermessage']=e
+ 
+    e2_label = Label( window, text="Griglia pulsanti")
+    e2_label.grid(row=1, column=0, columnspan=3,sticky="nsew")
+    e2 = Entry(window,font=("Courier", 28), width=10)
+    e2.insert(0, fnt['btngrid'])
+    e2.grid(row=1, column=3, columnspan=3,sticky="nsew")
+    entries['btngrid']=e2
+
+    e3_label = Label( window, text="Numero corrente (client)")
+    e3_label.grid(row=2, column=0, columnspan=3,sticky="nsew")
+    e3 = Entry(window,font=("Courier", 28), width=10)
+    e3.insert(0, fnt['varclient'])
+    e3.grid(row=2, column=3, columnspan=3,sticky="nsew")
+    entries['varclient']=e3
+
+    e4_label = Label( window, text="Numero corrente (tabellone)")
+    e4_label.grid(row=3, column=0, columnspan=3,sticky="nsew")
+    e4 = Entry(window,font=("Courier", 28), width=10)
+    e4.insert(0, fnt['currentnumberlabel'])
+    e4.grid(row=3, column=3, columnspan=3,sticky="nsew")
+    entries['currentnumberlabel']=e4
+
+    bottom_label = Label( window, text="Per rendere effettivi i cambiamenti riavviare il programma", fg="red")
+    bottom_label.grid(row=4, column=0, columnspan=9,sticky="nsew")
+
+
+    b = Button(window, text="Salva", command=saveEntriesVaule)
+    b.grid(row=0, column=6, columnspan=3, rowspan=4, sticky="nsew")
+
+    window.mainloop()
+
+
+menubar = Menu(root)
+filemenu = Menu(menubar, tearoff=0)
+filemenu.add_command(label="Font", command=create_window)
+filemenu.add_separator()
+filemenu.add_command(label="Esci", command=root.quit)
+menubar.add_cascade(label="Opzioni", menu=filemenu)
+root.config(menu=menubar)
 
 # create all of the main containers
 top_frame = Frame(root, bg='gray', width=100, height=20, pady=3,borderwidth=1)
@@ -62,7 +174,7 @@ var_client = StringVar()
 var_client.set("")
 label_client = Label( top_left2, textvariable=var_client)
 label_client.config(width=5)
-label_client.config(font=("Courier", 50))
+label_client.config(font=("Courier", fnt['varclient']))
 label_client.pack()
 
 for x in range(10):
@@ -99,7 +211,7 @@ limite = 99 #limite contatore
 def addBtnToGrid(id):
     btn = HoverButton(btm_frame,text=id, height = 3, width = 5, activebackground='#585f72')
     btn['command'] = lambda idx=id, binst=btn: removeBtnFromGrid(idx, binst)
-    btn.config(font=("Courier bold", 8))
+    btn.config(font=("Courier bold", fnt['btngrid']))
     #btn.grid(column=(id-1)%10, row=int(math.floor((id-1)/10)), sticky="nwe")
     btn.grid(column=(id)%10, row=int(math.floor((id)/10)), sticky="nwe")
     btnID[str(id)] = (id,btn) #aggiungi l'id del pulsante inserito nella lista
@@ -233,7 +345,7 @@ def undoOrder():
         removed_key = removedOrder[0]
         removeBtnFromGrid(btnID[removed_key][0],btnID[removed_key][1])
     else:
-        messagebox.showinfo( "Errore!", "Impossibile annullare, la coda degli ordini è vuota", icon='error')
+        messagebox.showerror( "Errore", "Impossibile annullare, la coda degli ordini è vuota", icon='error')
 
 #undo_button = Button(top_left3, text = "Annulla", command = undoOrder,height = 10, width = 30)
 reset_btn = Button(top_left3, text = "Reset", command = reset,height = 5, width = 15)
@@ -258,7 +370,7 @@ def insertOrderByEntry():
     global btnID
     testo = entry.get()
     if testo == '': #TODO:deve essere un numero
-        messagebox.showinfo( "Attenzione!", "Inserire un numero", icon='warning')
+        messagebox.showwarning( "Attenzione!", "Inserire un numero")
     else:
             num = int(testo)
             addOrder(num)
@@ -313,7 +425,7 @@ footer_frame2.grid(row=3,column=0, sticky="sew", columnspan=2)
 headerMessageSV = StringVar()
 headerMessageSV.set("Stiamo servendo il numero")
 headerMessage = Label( top_frame2, textvariable=headerMessageSV)
-headerMessage.config(font=("Courier", 40))
+headerMessage.config(font=("Courier", fnt['headermessage']))
 headerMessage.grid(row=0, column=0,sticky="new")
 
 
@@ -321,7 +433,7 @@ headerMessage.grid(row=0, column=0,sticky="new")
 currentNumberSV = StringVar()
 currentNumberLabel = Label( cnt_frame2, textvariable = currentNumberSV )
 #currentNumberLabel.config(width=200)
-currentNumberLabel.config(font=("Courier bold", 200))
+currentNumberLabel.config(font=("Courier bold", fnt['currentnumberlabel']))
 currentNumberLabel.grid(row=1, column=0,sticky="nswe")
 currentNumberLabel.pack()
 
@@ -336,8 +448,12 @@ bottomLabel.grid(sticky="nsew")
 bottomLabel.pack()
 
 #logo
-img = ImageTk.PhotoImage(Image.open("logo.gif"))
-Label(cnt_left_frame2, image=img).grid(sticky="ns") 
+try:
+    img = ImageTk.PhotoImage(Image.open("logo.gif"))
+    Label(cnt_left_frame2, image=img).grid(sticky="ns")
+except FileNotFoundError:
+    messagebox.showwarning( "Attenzione", "Nessun logo trovato!")
+ 
 
 #permette di far scorrere la lista degli ordini sul tabellone
 def task():
